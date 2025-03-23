@@ -72,25 +72,26 @@ pipeline {
           }
        }
     }
-    stage("Nexus Artifact Uploader"){
-        steps{
-           nexusArtifactUploader(
-              nexusVersion: 'nexus3',
-              protocol: 'http',
-              nexusUrl: '172.31.16.66:8081',
-              groupId: 'webapp',
-              version: "${env.BUILD_ID}-${env.BUILD_TIMESTAMP}",
-              repository: 'maven-project-releases',  //"${NEXUS_REPOSITORY}",
-              credentialsId: "${NEXUS_CREDENTIAL_ID}",
-              artifacts: [
-                  [artifactId: 'webapp',
-                  classifier: '',
-                  file: "${WORKSPACE}/webapp/target/webapp.war",
-                  type: 'war']
-              ]
-           )
-        }
+    stage("Nexus Artifact Uploader") {
+    steps {
+        nexusArtifactUploader(
+            nexusVersion: 'nexus3',
+            protocol: 'http',
+            nexusUrl: '172.31.16.66:8081',
+            groupId: 'webapp',
+            version: "${env.BUILD_ID}",  // Removed env.BUILD_TIMESTAMP
+            repository: 'maven-project-releases',
+            credentialsId: 'Nexus-Credential',  // Hardcoded to avoid env issues
+            artifacts: [
+                [artifactId: 'webapp',
+                 classifier: '',
+                 file: "${WORKSPACE}/target/webapp.war",  // Adjusted path
+                 type: 'war']
+            ]
+        )
     }
+}
+
     stage('Deploy to Development Env') {
         environment {
             HOSTS = 'dev'
